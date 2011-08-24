@@ -2,6 +2,7 @@
 [+] Logging
 [+] Split Server Code
 [+] Daemonize
+[ ] Configuration file
 [ ] Launchd Plist
 [ ] Installer
 
