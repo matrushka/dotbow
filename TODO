@@ -1,0 +1,9 @@
+[+] Framework Detectors
+[+] Logging
+[+] Split Server Code
+[+] Daemonize
+[ ] Launchd Plist
+[ ] Installer
+
+
+[+] Accessing logger after being daemonized destroys the server - Logger stream gets closed when its used in daemon

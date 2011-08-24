@@ -1,0 +1,5 @@
+tmp/*
+bowd.log
+vhosts/*
+.DS_Store
+Gemfile.lock
