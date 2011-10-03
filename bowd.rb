@@ -54,7 +54,6 @@ Bow.instance.dns_server_start(5300) do
     logger = Bow.instance.create_logger
     # Handle request
     directory_name = match.to_a.last
-    p directory_name
     directory = "#{Bow.instance.home}/Sites/#{directory_name}"
     if File.directory? directory
       logger.info "#{directory} found for #{directory_name}.#{domain}"
