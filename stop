@@ -1,3 +1,0 @@
-#!/bin/sh
-BASEDIR=$(dirname $0)
-kill -9 `cat $BASEDIR/tmp/bowd.pid`

@@ -1,5 +1,6 @@
 <VirtualHost *:80>
   ServerName <%= domain_name %>
+  ServerAlias *.<%= domain_name %>
   DocumentRoot "<%= document_root %>/public"
   <Directory "<%= document_root %>/public">
     Allow from all

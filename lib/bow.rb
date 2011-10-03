@@ -16,7 +16,7 @@ class Bow
     @home = `sudo -u #{@user} echo ~`.chomp
     @detectors = []
 
-    @logger = Logger.new("#{@path}/bowd.log")
+    @logger = Logger.new("#{@path}/log/bowd.log")
     @logger.formatter = proc { |severity, datetime, progname, msg|
       "[#{severity}] #{datetime}: #{msg}\n"
     }
@@ -38,7 +38,7 @@ class Bow
   end
 
   def create_logger
-    logger = Logger.new("#{@path}/bowd.log")
+    logger = Logger.new("#{@path}/log/bowd.log")
     logger.formatter = proc { |severity, datetime, progname, msg|
       "[#{severity}] #{datetime}: #{msg}\n"
     }

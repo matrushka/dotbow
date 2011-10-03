@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'daemons'
+
+ENV['BUNDLE_GEMFILE'] ||= File.join(Dir.pwd, 'Gemfile')
+
+# Daemonize
+Daemons.run('bowd.rb',{
+	:app_name => "bowd",
+	:mode => :load,
+	:dir_mode  => :normal,
+	:backtrace => true,
+	:dir => "#{File.dirname(__FILE__)}/tmp",
+	:log_dir => "#{File.dirname(__FILE__)}/log",
+	:monitor => true
+})

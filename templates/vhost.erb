@@ -1,5 +1,6 @@
 <VirtualHost *:80>
   ServerName <%= domain_name %>
+  ServerAlias *.<%= domain_name %>
   DocumentRoot "<%= document_root %>"
   DirectoryIndex index.html index.php
   <Directory "<%= document_root %>">

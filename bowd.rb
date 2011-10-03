@@ -7,8 +7,8 @@ require 'erubis'
 require 'rubydns'
 require 'daemons'
 
-require 'lib/apache'
-require 'lib/bow'
+require "#{File.dirname(__FILE__)}/lib/apache"
+require "#{File.dirname(__FILE__)}/lib/bow"
 
 if ENV['USER'] != 'root' || ENV['SUDO_USER'] == 'root'
   puts "Bow must be run as root through sudo from your own user"
@@ -47,22 +47,14 @@ unless Apache.instance.check_config apache_config_injection
   Apache.instance.inject_config apache_config_injection
 end
 
-# Daemonize
-Daemons.daemonize({
-  :dir_mode => :normal,
-  :dir => "#{Bow.instance.path}/tmp",
-  :backtrace => false,
-  :log_output => false,
-  :app_name => "bowd"
-})
-
 # Start DNS Server
 Bow.instance.dns_server_start(5300) do
-  match(Regexp.new("(.*)\.#{domain}"),:A) do |match,transaction|
+  match(Regexp.new("(www\.)?(.+)\.#{domain}"),:A) do |match,transaction|
     # Init handler logger
     logger = Bow.instance.create_logger
     # Handle request
-    directory_name = match[1]
+    directory_name = match.to_a.last
+    p directory_name
     directory = "#{Bow.instance.home}/Sites/#{directory_name}"
     if File.directory? directory
       logger.info "#{directory} found for #{directory_name}.#{domain}"
