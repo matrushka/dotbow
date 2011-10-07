@@ -3,13 +3,12 @@ $0 = 'bowd'
 require "rubygems"
 require "bundler/setup"
 
-require 'erubis'
-require 'rubydns'
-require 'daemons'
+Bundler.require(:default)
 
-require "#{File.dirname(__FILE__)}/lib/apache"
 require "#{File.dirname(__FILE__)}/lib/bow"
+require "#{File.dirname(__FILE__)}/lib/apache"
 
+# Warn user for non-root accesses
 if ENV['USER'] != 'root' || ENV['SUDO_USER'] == 'root'
   puts "Bow must be run as root through sudo from your own user"
   exit
@@ -17,15 +16,16 @@ end
 
 Bow.instance.logger.info "Bow warming up..."
 
-Apache.instance.path = "/Applications/MAMP/bin/apache2/bin"
+# Define domain 
+domain = ENV['BOW_DOMAIN']
+domain ||= 'dev'
 
-domain = 'dev'
-port = 5300
+# Define DNS port
+port = ENV['BOW_DNS_PORT']
+port ||= 5300
 
 # Load detectors
 Dir["#{Bow.instance.path}/detectors/*.rb"].each {|file| require file }
-
-# y Bow.instance.detectors
 
 # check "/etc/resolver/#{domain}"
 unless File.exists? "/etc/resolver/#{domain}"
@@ -46,6 +46,16 @@ unless Apache.instance.check_config apache_config_injection
   p "Injecting apache configuration"
   Apache.instance.inject_config apache_config_injection
 end
+
+# Daemonize the rest
+Daemons.daemonize({
+  :app_name => "bowd",
+  :mode => :load,
+  :dir_mode  => :normal,
+  :backtrace => true,
+  :dir => "#{Bow.instance.path}/tmp",
+  :log_dir => "#{Bow.instance.path}/log",
+})
 
 # Start DNS Server
 Bow.instance.dns_server_start(5300) do

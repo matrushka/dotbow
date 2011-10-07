@@ -13,7 +13,7 @@ class Bow
     @templates = File.expand_path(@path+"/templates")
 
     @user = ENV['SUDO_USER']
-    @home = `sudo -u #{@user} echo ~`.chomp
+    @home = `sudo -u #{@user} echo $HOME`.chomp
     @detectors = []
 
     @logger = Logger.new("#{@path}/log/bowd.log")

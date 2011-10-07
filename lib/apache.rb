@@ -5,11 +5,16 @@ class Apache
   def initialize
     # load apache path to be used with bow
     @path = ENV['BOW_APACHE_PATH']
+
     # find apache path if none given
-    if @path.nil?
-      @path = File.dirname(`which apachectl`)
-    end 
-    @config_path = `#{@path}/apachectl -V`[/SERVER_CONFIG_FILE="(.+)"/,1]
+    @path ||= File.dirname(`which apachectl`)
+    
+    # Detect MAC OS X here and override as USER.conf file
+    if RUBY_PLATFORM.downcase.include?("darwin")
+      @config_path = "/etc/apache2/users/#{Bow.instance.user}"
+    else
+      @config_path = `#{@path}/apachectl -V`[/SERVER_CONFIG_FILE="(.+)"/,1]
+    end
   end
   
   def check_config string
