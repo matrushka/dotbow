@@ -29,7 +29,8 @@ Dir["#{Bow.instance.path}/detectors/*.rb"].each {|file| require file }
 
 # check "/etc/resolver/#{domain}"
 unless File.exists? "/etc/resolver/#{domain}"
-  open("/etc/resolver/#{domain}", 'w') do |f|
+  FileUtils.mkdir_p "/etc/resolver"
+  File.new("/etc/resolver/#{domain}", 'w+') do |f|
     f.puts Bow.instance.render('resolver', {:port => port })
   end
 end
@@ -46,16 +47,6 @@ unless Apache.instance.check_config apache_config_injection
   p "Injecting apache configuration"
   Apache.instance.inject_config apache_config_injection
 end
-
-# Daemonize the rest
-Daemons.daemonize({
-  :app_name => "bowd",
-  :mode => :load,
-  :dir_mode  => :normal,
-  :backtrace => true,
-  :dir => "#{Bow.instance.path}/tmp",
-  :log_dir => "#{Bow.instance.path}/log",
-})
 
 # Start DNS Server
 Bow.instance.dns_server_start(5300) do
