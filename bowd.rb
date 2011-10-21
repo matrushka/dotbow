@@ -16,7 +16,7 @@ end
 
 Bow.instance.logger.info "Bow warming up..."
 
-# Define domain 
+# Define domain
 domain = ENV['BOW_DOMAIN']
 domain ||= 'dev'
 
@@ -30,7 +30,7 @@ Dir["#{Bow.instance.path}/detectors/*.rb"].each {|file| require file }
 # check "/etc/resolver/#{domain}"
 unless File.exists? "/etc/resolver/#{domain}"
   FileUtils.mkdir_p "/etc/resolver"
-  File.new("/etc/resolver/#{domain}", 'w+') do |f|
+  File.open("/etc/resolver/#{domain}", 'w+') do |f|
     f.puts Bow.instance.render('resolver', {:port => port })
   end
 end
