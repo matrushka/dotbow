@@ -19,7 +19,7 @@ git clone git@github.com:matrushka/dotbow.git ~/.bow
 Run install script as super user (LaunchDaemon installation requires root user rights)
 
 ```shell
-cd ~/.bow && sudo ./bow install
+sudo ~/.bow/bow install
 ```
 
 ## Usage
