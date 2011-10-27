@@ -29,7 +29,7 @@ Lets assume you have a folder named test under ~/Sites. When you type test.dev t
 Bow tries to detect the framework you are using to fill the initial vhost file. Bow currently supports Rack (if you have passenger for apache installed), Symfony 1, Symfony 2. It is possible to add more frameworks (so i am waiting for pull requests!).
 
 ### Edit
-You can easily edit the vhost file of your domain by typing:
+You can easily edit the vhost file of your domain by typing
 ```shell
 ~/.bow/bow edit DOMAIN_NAME
 ```
