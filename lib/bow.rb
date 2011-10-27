@@ -15,7 +15,8 @@ class Bow
     @home = `sudo -u #{@user} echo $HOME`.chomp
     @detectors = []
 
-    @logger = Logger.new("#{@path}/log/bowd.log")
+    # Create logger with 10MB of shift size
+    @logger = Logger.new("#{@path}/log/bow.log", 0, (10 * 1024 * 1024))
     @logger.formatter = proc { |severity, datetime, progname, msg|
       "[#{severity}] #{datetime}: #{msg}\n"
     }
