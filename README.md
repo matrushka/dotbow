@@ -1,4 +1,4 @@
-# Bow is an Apache manager daemon for web developers using Mac OS X
+# Bow is an Apache manager utility for web developers using Mac OS X
 -----
 Make the directories on your users Sites directory accessible from apache by using '.dev' tld.
 
@@ -20,6 +20,14 @@ Run install script as super user (LaunchDaemon installation requires root user r
 
 ```shell
 sudo ~/.bow/bow install
+```
+
+## Updating
+
+An ordinary git pull is enough to update bow
+
+```shell
+cd ~/.bow && git pull
 ```
 
 ## Usage
