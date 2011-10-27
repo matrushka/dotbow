@@ -26,8 +26,4 @@ class Apache
       f.puts string
     end
   end
-
-  def restart
-    `#{@path}/apachectl restart`
-  end
 end
