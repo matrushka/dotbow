@@ -30,9 +30,11 @@ Bow tries to detect the framework you are using to fill the initial vhost file. 
 
 ### Edit
 You can easily edit the vhost file of your domain by typing
+
 ```shell
 ~/.bow/bow edit DOMAIN_NAME
 ```
+
 This will open the vhost file in your shells $EDITOR (you can use vim, nano, Textmate, Sublime Text) and reloads apache after the file is saved.
 
 ### List (NOT IMPLEMENTED YET)
