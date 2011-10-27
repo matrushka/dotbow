@@ -49,5 +49,35 @@ This will list all domains managed by .bow
 ```
 And this one will clear vhost files which are bound to non-existing directories
 
+## Detectors
+
+You can add your own detectors for other frameworks all you have to do is create a DETECTOR_NAME.rb file for detector module in detectors directory and a vhost.DETECTOR_NAME.erb file for vhost template in templates directory. Existing template and detector codes are easy to understand.
+
+Currently only the application path (Such as ~/Sites/test) is provided for detector module and application path with domain name is provided for detector template file. But further parameters can be added if necessary.
+
+You can see existing Rack Detector codes below.
+
+### Rack Detector Module
+```ruby
+module RackDetector
+  Bow.instance.detectors.push self
+  def self.detect path
+    return File.exists?("#{path}/config.ru") && File.directory?("#{path}/public") && File.directory?("#{path}/tmp")
+  end
+end
+```
+### Rack Detector Template
+```
+<VirtualHost *:80>
+  ServerName <%= domain_name %>
+  ServerAlias *.<%= domain_name %>
+  DocumentRoot "<%= document_root %>/public"
+  <Directory "<%= document_root %>/public">
+    Allow from all
+    Options -MultiViews
+  </Directory>
+</VirtualHost>
+```
+
 -----
 &copy; 2011 Baris Gumustas
