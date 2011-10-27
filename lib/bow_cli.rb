@@ -1,7 +1,24 @@
 class BowCli < Thor
 	desc "list", "List domains"
 	def list
-		puts "LIST"
+		vhosts = {}
+		Dir["#{Bow.instance.vhosts}/*.conf"].each do |vhost|
+			domain_name = File.basename(vhost,'.conf')
+			tab_size = `echo -e "\t"`.length
+			vhosts[domain_name] = (domain_name.length.to_f/tab_size.to_f)
+		end
+
+		vhosts.each do |domain,tab_count|
+			directory = "#{Bow.instance.home}/Sites/#{domain}"
+			if File.directory? directory
+				domain = domain.bold.green
+			else
+				domain = domain.bold.red
+			end
+			framework = Bow.instance.match_template directory
+			framework ||= 'default'.black
+			puts "#{domain}#{"\t" * (vhosts.max[1]-tab_count)}\t#{framework}"
+		end
 	end
 
 	desc "edit", "Edit vhost file"
@@ -12,12 +29,19 @@ class BowCli < Thor
 
 	desc "clear", "Clear ununsed vhost files"
 	def clear
-		puts "CLEAR -- NOT IMPLEMENTED YET --"
+		Dir["#{Bow.instance.vhosts}/*.conf"].each do |vhost|
+			domain_name = File.basename(vhost,'.conf')
+			directory = "#{Bow.instance.home}/Sites/#{domain_name}"
+			unless File.directory? directory
+				puts "Deleting: #{domain_name}".bold.red
+				File.delete("#{Bow.instance.vhosts}/#{domain_name}.conf")
+			end
+		end
 	end
 
 	desc "install", "Installs bow"
 	def install
-		puts "Installing bow components"
+		puts "Installing bow components".bold
 
 		if ENV['USER'] != 'root' || ENV['SUDO_USER'] == 'root'
 			puts "Bow install must be run as root through sudo from your own user"

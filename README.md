@@ -37,13 +37,13 @@ You can easily edit the vhost file of your domain by typing
 
 This will open the vhost file in your shells $EDITOR (you can use vim, nano, Textmate, Sublime Text) and reloads apache after the file is saved.
 
-### List (NOT IMPLEMENTED YET)
+### List
 ```shell
 ~/.bow/bow list
 ```
-This will list all domains managed by .bow
+This will list all domains managed by .bow followed by matched detector. Green domains means connected directory exists and red domains means directory not found (those domains without directories can be cleared by clear command).
 
-### Clear (NOT IMPLEMENTED YET)
+### Clear
 ```shell
 ~/.bow/bow clear
 ```
