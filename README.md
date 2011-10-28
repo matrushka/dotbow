@@ -16,6 +16,12 @@ Clone git to ~/.bow
 git clone git@github.com:matrushka/dotbow.git ~/.bow
 ```
 
+Install required gems (you may have to run this with sudo depending on your setup)
+
+```shell
+cd ~/.bow && bundle install
+```
+
 Run install script as super user (LaunchDaemon installation requires root user rights)
 
 ```shell
