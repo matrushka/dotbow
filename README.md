@@ -35,6 +35,7 @@ rvmsudo ~/.bow/bow.sh install
 ```
 
 After the installation is completed you can have to add the line below to your shell profile
+
 ```shell
 source ~/.bow/bow_profile.sh
 ```
@@ -72,7 +73,7 @@ This will list all domains managed by .bow followed by matched detector. Green d
 ```shell
 bow switch DOMAIN_NAME
 ```
-This will change the directory to the directory related with DOMAIN_NAME.
+This will cd to the directory related with DOMAIN_NAME (Equivalent of "cd ~/Sites/DOMAIN_NAME").
 
 
 ### Clear
