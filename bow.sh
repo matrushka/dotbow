@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#! /usr/bin/env ruby
 
 $0 = 'bow'
 
@@ -10,7 +10,8 @@ $0 = 'bow'
 
 # Init bundler
 require 'rubygems'
-require 'bundler/setup'
+require 'bundler'
+Dir.chdir "#{File.dirname(__FILE__)}"
 Bundler.require(:default)
 ENV['BUNDLE_GEMFILE'] ||= File.join(Dir.pwd, 'Gemfile')
 

@@ -166,6 +166,9 @@ class Bow
               end
             end
             FileUtils.chown Bow.instance.user, nil, vhosts_file
+            # plist watcher restarts apache after modification (this is why i have to touch it first)
+            # WatchPaths in launchd does not detect file changes it'll only detect new and deleted files (also touches on that directory)
+            system "touch #{Bow.instance.vhosts}"
             logger.info "Waiting for Apache Refresher."
             sleep 3
             # May be we can loop for 10 seconds while checking apache status?

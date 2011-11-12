@@ -2,10 +2,15 @@ class BowCli < Thor
 	desc "list", "List domains"
 	def list
 		vhosts = {}
+		max_domain_length = 0
+		tab_size = `echo -e "\t"`.length
 		Dir["#{Bow.instance.vhosts}/*.conf"].each do |vhost|
 			domain_name = File.basename(vhost,'.conf')
-			tab_size = `echo -e "\t"`.length
-			vhosts[domain_name] = (domain_name.length.to_f/tab_size.to_f)
+			domain_length_in_tabs = (domain_name.length.to_f/tab_size.to_f)
+			vhosts[domain_name] = domain_length_in_tabs
+			if domain_length_in_tabs > max_domain_length
+				max_domain_length = domain_length_in_tabs.floor
+			end
 		end
 
 		vhosts.each do |domain,tab_count|
@@ -17,14 +22,22 @@ class BowCli < Thor
 			end
 			framework = Bow.instance.match_template directory
 			framework ||= 'default'.black
-			puts "#{domain}#{"\t" * (vhosts.max[1]-tab_count)}\t#{framework}"
+			puts "#{domain}#{"\t" * (max_domain_length-tab_count)}\t#{framework}"
 		end
+	end
+
+	desc "switch", "Switch to the specified domain directory"
+	def switch(domain)
+		command = "cd #{Bow.instance.home}/Sites/#{domain}"
+		print "execute:"+command+"\n"
 	end
 
 	desc "edit", "Edit vhost file"
 	def edit(vhost)
 		system "$EDITOR #{Bow.instance.vhosts}/#{vhost}.conf"
-		# plist watcher restarts apache after modification
+		# plist watcher restarts apache after modification (this is why i have to touch it first)
+		# WatchPaths in launchd does not detect file changes it'll only detect new and deleted files (also touches on that directory)
+		system "touch #{Bow.instance.vhosts}"
 	end
 
 	desc "clear", "Clear ununsed vhost files"
@@ -71,6 +84,11 @@ class BowCli < Thor
 		else
 			puts "[ ] Agent plist already exists".yellow.green
 		end
+
+		puts "---------------------------------------".black.bold
+		puts "Please add the line below to your shell profile"
+		puts "#{Bow.instance.path}/bow_profile.sh # Load Bow".bold
+		puts "---------------------------------------".black.bold
 	end
 
 	desc "uninstall", "Uninstalls bow"
