@@ -34,10 +34,9 @@ class BowCli < Thor
 
 	desc "edit", "Edit vhost file"
 	def edit(vhost)
-		system "$EDITOR #{Bow.instance.vhosts}/#{vhost}.conf"
 		# plist watcher restarts apache after modification (this is why i have to touch it first)
 		# WatchPaths in launchd does not detect file changes it'll only detect new and deleted files (also touches on that directory)
-		system "touch #{Bow.instance.vhosts}"
+		print "execute_and_refresh:#{ENV['EDITOR']} #{Bow.instance.vhosts}/#{vhost}.conf"
 	end
 
 	desc "clear", "Clear ununsed vhost files"

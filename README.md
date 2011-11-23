@@ -28,7 +28,7 @@ Run install script as super user (LaunchDaemon installation requires root user r
 sudo ~/.bow/bow.sh install
 ```
 
-IF YOU ARE USING RVM PLEASE USE THE LINE BELOW
+!!!IF YOU ARE USING RVM PLEASE USE THE LINE BELOW!!!
 
 ```shell
 rvmsudo ~/.bow/bow.sh install
