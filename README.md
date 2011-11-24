@@ -25,13 +25,13 @@ cd ~/.bow && bundle install
 Run install script as super user (LaunchDaemon installation requires root user rights)
 
 ```shell
-sudo ~/.bow/bow.sh install
+sudo ~/.bow/bow install
 ```
 
 !!!IF YOU ARE USING RVM PLEASE USE THE LINE BELOW!!!
 
 ```shell
-rvmsudo ~/.bow/bow.sh install
+rvmsudo ~/.bow/bow install
 ```
 
 After the installation is completed you can have to add the line below to your shell profile
@@ -42,10 +42,14 @@ source ~/.bow/bow_profile.sh
 
 ## Updating
 
-An ordinary git pull is enough to update bow
+An ordinary git pull followed by daemon and agent reload is enough to update bow
 
 ```shell
 cd ~/.bow && git pull
+launchctl unload ~/Library/LaunchAgents/com.bow.server.plist
+launchctl load ~/Library/LaunchAgents/com.bow.server.plist
+sudo launchctl unload /Library/LaunchDaemons/com.bow.refresh.plist
+sudo launchctl load /Library/LaunchDaemons/com.bow.refresh.plist
 ```
 
 ## Usage

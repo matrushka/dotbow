@@ -1,4 +1,5 @@
 require 'singleton'
+require 'logger'
 class Bow
   attr_reader :path, :home, :vhosts, :templates, :user, :detectors, :logger, :domain, :port
   @@instance = nil
@@ -53,7 +54,7 @@ class Bow
   end
 
   def create_logger
-    logger = Logger.new("#{@path}/log/bowd.log")
+    logger = Logger.new("#{@path}/log/bow.log", 0, (10 * 1024 * 1024))
     logger.formatter = proc { |severity, datetime, progname, msg|
       "[#{severity}] #{datetime}: #{msg}\n"
     }
@@ -140,23 +141,26 @@ class Bow
   end
 
   def dns_server_start
-    Bow.instance.logger.info "Bow warming up..."
-    dns_server_create(@port) do
-      # Match request URL
-      match(Regexp.new("(www\.)?(.+)\.#{Bow.instance.domain}"),:A) do |match,transaction|
+    Bow.instance.logger.info "Bow server warming up..."
+    DNSServer.start({
+      :port => @port,
+      :host => "127.0.0.1",
+      :logger => Bow.instance.logger,
+      :resolver => proc do |name, type|
+        # Seek host in available hosts
+        site_name = name.match("(www\.)?(.+)\.#{Bow.instance.domain}").to_a.last
         # Init handler logger
-        logger = Bow.instance.create_logger
+        logger = Bow.instance.logger
         # Handle request
-        directory_name = match.to_a.last
-        directory = "#{Bow.instance.home}/Sites/#{directory_name}"
+        directory = "#{Bow.instance.home}/Sites/#{site_name}"
         if File.directory? directory
-          logger.info "#{directory} found for #{directory_name}.#{Bow.instance.domain}"
-          vhosts_file = "#{Bow.instance.path}/vhosts/#{directory_name}.conf"
+          logger.info "#{directory} found for #{site_name}.#{Bow.instance.domain}"
+          vhosts_file = "#{Bow.instance.path}/vhosts/#{site_name}.conf"
           unless File.exists? vhosts_file
             logger.info "Virtual host file not found."
             open(vhosts_file, 'w') do |f|
               template = Bow.instance.match_template directory
-              template_variables = {:document_root => "#{directory}", :domain_name => "#{directory_name}.#{Bow.instance.domain}"}
+              template_variables = {:document_root => "#{directory}", :domain_name => "#{site_name}.#{Bow.instance.domain}"}
               if !template.nil? && File.exists?("#{Bow.instance.path}/templates/vhost.#{template}.erb");
                 logger.info "\"#{template}\" detected. Writing virtual host file."
                 f.puts Bow.instance.render("vhost.#{template}", template_variables)
@@ -168,37 +172,18 @@ class Bow
             FileUtils.chown Bow.instance.user, nil, vhosts_file
             # plist watcher restarts apache after modification (this is why i have to touch it first)
             # WatchPaths in launchd does not detect file changes it'll only detect new and deleted files (also touches on that directory)
-            system "touch #{Bow.instance.vhosts}"
+            # system "touch #{Bow.instance.vhosts}" # Unnecessary since new file is caught by WatchPaths
             logger.info "Waiting for Apache Refresher."
             sleep 3
             # May be we can loop for 10 seconds while checking apache status?
+            logger.info "Response sent."
           end
-          transaction.respond!("127.0.0.1")
+          { :ttl => 16000, :ip => "127.0.0.1" }
         else
-          transaction.passthrough!(Resolv::DNS.new)
+          logger.info "#{directory} not found for #{site_name}.#{Bow.instance.domain}"
+          nil
         end
       end
-      # Default DNS handler
-      otherwise do |transaction|
-        transaction.passthrough!(Resolv::DNS.new)
-      end
-    end
-  end
-
-  def dns_server_create port, &block
-    # Init server
-    server = RubyDNS::Server.new(&block)
-    # Init server logger
-    server.logger = Bow.instance.create_logger
-    server.logger.info "Starting DNS server..."
-    # Run server
-    EventMachine.run do
-      server.fire(:setup)
-      server.logger.info "DNS Server listening on port #{port}"
-      EventMachine.open_datagram_socket('127.0.0.1', port, RubyDNS::UDPHandler, server)
-      EventMachine.start_server('127.0.0.1', port, RubyDNS::TCPHandler, server)
-      server.fire(:start)
-    end
-    server.fire(:stop)
+    })
   end
 end

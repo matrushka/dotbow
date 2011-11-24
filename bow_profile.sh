@@ -4,7 +4,7 @@ function bow {
 	do
 		arguments="$arguments $item"
 	done
-	output=`~/.bow/bow.sh$arguments`
+	output=`~/.bow/bow$arguments`
 	command=`echo $output |cut -d':' -f1`
 	if [[ "$command" == "execute" ]]
 	then
